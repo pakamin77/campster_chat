@@ -110,7 +110,7 @@ function requestChat(messageText, url_pattern) {
         type: "GET",
         dataType: "jsonp",
         cache:"no-store",
-        jsonp:"callback",
+        // jsonp:"callback",
 
         success: function (data) {
              if (data.size == 0)

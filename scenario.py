@@ -44,6 +44,7 @@ camp = Scenario(
     api=CampCrawler().request_debug,
     scenario={
         'LOCATION':[],
-        'DATE':['오늘']
+        'DATE':['오늘'],
+        'PLACE':[]
     }
 )
