@@ -107,7 +107,7 @@ class EquipmentEditor(BaseEditor):
 
 class EquipmentAnswerer():
 
-    def map_form(self, category: str, brand: str, result: list) -> str:
+    def map_form(self, category: str, brand: str, result: list) -> tuple:
         """
         여행지 출력 포맷
 
@@ -116,8 +116,8 @@ class EquipmentAnswerer():
         :param result: 데이터 딕셔너리
         :return: 출력 메시지
         """
-        msg5 = ""
-        for i in range(5):
+        msg_tuple = ["", "",""]
+        for i in range(3):
 
             result[i+1]['title'] = re.sub("<b>", "", result[i+1]['title'])
             result[i + 1]['title'] = re.sub("</b>", "", result[i + 1]['title'])
@@ -128,10 +128,12 @@ class EquipmentAnswerer():
             msg += f"\'{result[i+1]['title']}\' \n"
             msg += f"최저가 : {result[i+1]['lprice']}원 \n"
             msg += f"바로가기 : {result[i+1]['link']}\n"
-            msg += f"사진보기 :{result[i+1]['image']}\n\n"
-            msg5 += msg
+            msg += "{{"
+            msg += result[i+1]['image']
+            msg += "}} \n\n"
+            msg_tuple[i] += msg
 
-        return msg5
+        return msg_tuple
 
 
 class EquipmentCrawler:
@@ -160,4 +162,14 @@ class EquipmentCrawler:
 
         result = EquipmentAnswerer().map_form(category, brand, result_dict)
         #return result, result_dict
-        return result
+        temp_result = {
+            'input': [],
+            'intent': 'equipment',
+            'entity': [],
+            'state': 'SUCCESS',
+            'answer': result
+        }
+
+        print(temp_result)
+
+        return temp_result
