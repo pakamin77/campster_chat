@@ -30,8 +30,10 @@ class EquipmentSearcher:
     def _make_query(self, category: str, brand: str) -> str:
 
 
-        #query = ' '.join([category, brand])
-        query = category
+        query = ' '.join([category, brand])
+        #query = category
+
+        print(query)
         return query
 
     def search_naver_shopping(self, location: str, travel: str):
@@ -58,7 +60,14 @@ class EquipmentSearcher:
                 temp_dict = {"title": json_data["items"][i]["title"],
                              "link": json_data["items"][i]["link"],
                              "image": json_data["items"][i]["image"],
-                             "lprice": json_data["items"][i]["lprice"]}
+                             "lprice": json_data["items"][i]["lprice"],
+                             "category1": json_data["items"][i]["category1"],
+                             "category2": json_data["items"][i]["category2"],
+                             "category3": json_data["items"][i]["category3"],
+                             "brand": json_data["items"][i]["brand"]
+
+
+                             }
                 data_dict.append(temp_dict)
 
             #print(data_dict[1].values())
@@ -98,7 +107,7 @@ class EquipmentEditor(BaseEditor):
 
 class EquipmentAnswerer():
 
-    def map_form(self, category: str, brand: str, result: list) -> str:
+    def map_form(self, category: str, brand: str, result: list) -> tuple:
         """
         여행지 출력 포맷
 
@@ -107,20 +116,24 @@ class EquipmentAnswerer():
         :param result: 데이터 딕셔너리
         :return: 출력 메시지
         """
-        msg5 = ""
-        for i in range(5):
+        msg_tuple = ["", "",""]
+        for i in range(3):
 
             result[i+1]['title'] = re.sub("<b>", "", result[i+1]['title'])
             result[i + 1]['title'] = re.sub("</b>", "", result[i + 1]['title'])
 
-            msg = f"\'{category}\' 카테고리의 {i+1}번째 검색결과입니다.\n"
-            msg += f"{result[i+1]['title']} \n"
-            msg += f"{result[i+1]['lprice']}원 \n"
+            msg = f"{result[i + 1]['category1']} - {result[i + 1]['category2']} - {result[i + 1]['category3']} \n"
+            msg += f"\'{category}\' 카테고리의 {i + 1}번째 검색결과입니다.\n"
+            msg += f"\'{result[i + 1]['brand']}\' 브랜드의 \n"
+            msg += f"\'{result[i+1]['title']}\' \n"
+            msg += f"최저가 : {result[i+1]['lprice']}원 \n"
             msg += f"바로가기 : {result[i+1]['link']}\n"
-            msg += f"사진보기 :{result[i+1]['image']}\n\n"
-            msg5 += msg
+            msg += "{{"
+            msg += result[i+1]['image']
+            msg += "}} \n\n"
+            msg_tuple[i] += msg
 
-        return msg5
+        return msg_tuple
 
 
 class EquipmentCrawler:
@@ -149,7 +162,14 @@ class EquipmentCrawler:
 
         result = EquipmentAnswerer().map_form(category, brand, result_dict)
         #return result, result_dict
-        return result
+        temp_result = {
+            'input': [],
+            'intent': 'equipment',
+            'entity': [],
+            'state': 'SUCCESS',
+            'answer': result
+        }
 
-E = EquipmentCrawler()
-print(E.request_debug("화로","1"))
+        print(temp_result)
+
+        return temp_result
